@@ -19,6 +19,11 @@ let y = canvas.height - 30;
 let dx = 2;
 let dy = -2;
 const ballRadius = 10;
+const paddleHeight = 10;
+const paddleWidth = 75;
+let paddleX = (canvas.width - paddleWidth) / 2;
+let isRightPressed = false;
+let isLeftPressed = false;
 
 function checkBorderCollision() {
     if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
@@ -39,16 +44,50 @@ function drawBall() {
     ctx.closePath();
 }
 
+function drawPaddle() {
+    ctx.beginPath();
+    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawPaddle();
     drawBall();
     checkBorderCollision();
     x += dx;
     y += dy;
+    //refactor with Math.min and Math.max
+    if (isRightPressed && paddleX + paddleWidth < canvas.width) {
+        paddleX += 7;
+    } else if (isLeftPressed && paddleX > 0) {
+        paddleX -= 7;
+    }
 }
 
 function startGame() {
+    document.addEventListener("keydown", keyDownHandler, false); //When the keydown/keyup event is fired on any of the keys on your 
+    document.addEventListener("keyup", keyUpHandler, false);     //keyboard the keyDownHandler() function will be executed.
+    function keyDownHandler(e) {
+        if (e.key === "Right" || e.key === "ArrowRight") {
+            isRightPressed = true;
+        } else if (e.key === "Left" || e.key === "ArrowLeft") {
+            isLeftPressed = true;
+        }
+    }
+
+    function keyUpHandler(e) {
+        if (e.key === "Right" || e.key === "ArrowRight") {
+            isRightPressed = false;
+        } else if (e.key === "Left" || e.key === "ArrowLeft") {
+            isLeftPressed = false;
+        }
+    }
+
     setInterval(draw, 10); //The draw() function will be executed within setInterval every 10 milliseconds
+
 }
 //add start game button logic
 document.getElementById("runButton").addEventListener("click", function () {
