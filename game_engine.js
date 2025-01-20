@@ -24,10 +24,20 @@ const paddleWidth = 75;
 let paddleX = (canvas.width - paddleWidth) / 2;
 let isRightPressed = false;
 let isLeftPressed = false;
+let interval = 0;
 
 function checkBorderCollision() {
-    if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
+    if ( y + dy < ballRadius) {
         dy = -dy;
+    } else if (y + dy > canvas.height - ballRadius) {
+        //check whether the center of the ball is between the left and right edges of the paddle
+        if (x > paddleX && x < paddleX + paddleWidth) {
+            dy = -dy;
+        } else {
+            alert("GAME OVER!");
+            document.location.reload();
+            clearInterval(interval);    // Needed for Chrome to end game
+        }
     }
 
     if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
@@ -86,7 +96,7 @@ function startGame() {
         }
     }
 
-    setInterval(draw, 10); //The draw() function will be executed within setInterval every 10 milliseconds
+    interval = setInterval(draw, 10); //The draw() function will be executed within setInterval every 10 milliseconds
 
 }
 //add start game button logic
