@@ -19,11 +19,13 @@ let y = canvas.height - 30;
 let dx = 2;
 let dy = -2;
 const ballRadius = 10;
+
 const paddleHeight = 10;
 const paddleWidth = 75;
 let paddleX = (canvas.width - paddleWidth) / 2;
 let isRightPressed = false;
 let isLeftPressed = false;
+
 let interval = 0;
 
 const brickRowCount = 3;
@@ -37,12 +39,12 @@ const bricks = [];
 for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0};
+        bricks[c][r] = { x: 0, y: 0, status: 1 }; //add status to indicate whether we want to paint each brick on the screen or not.
     }
 }
 
-function checkBorderCollision() {
-    if ( y + dy < ballRadius) {
+function collisionDetectionBorder() {
+    if (y + dy < ballRadius) {
         dy = -dy;
     } else if (y + dy > canvas.height - ballRadius) {
         //check whether the center of the ball is between the left and right edges of the paddle
@@ -57,6 +59,20 @@ function checkBorderCollision() {
 
     if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
         dx = -dx;
+    }
+}
+
+function collisionDetectionBrick() {
+    for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+            const b = bricks[c][r];
+            if (b.status === 1) { //check only on the ones on screen, otherwise you'll have invisible bricks
+                if (y + dy > b.y && y + dy < b.y + brickHeight && x + dx > b.x && x + dx < b.x + brickWidth) {
+                    dy = -dy;
+                    b.status = 0;
+                }
+            }
+        }
     }
 }
 
@@ -80,15 +96,17 @@ function drawPaddle() {
 function drawBricks() {
     for (let c = 0; c < brickColumnCount; c++) {
         for (let r = 0; r < brickRowCount; r++) {
-            const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
-            const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
-            bricks[c][r].x = brickX;
-            bricks[c][r].y = brickY;
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = "orange";
-            ctx.fill();
-            ctx.closePath();
+            if (bricks[c][r].status === 1) {
+                const brickX = c * (brickWidth + brickPadding) + brickOffsetLeft;
+                const brickY = r * (brickHeight + brickPadding) + brickOffsetTop;
+                bricks[c][r].x = brickX;
+                bricks[c][r].y = brickY;
+                ctx.beginPath();
+                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.fillStyle = "orange";
+                ctx.fill();
+                ctx.closePath();
+            }
         }
     }
 }
@@ -98,7 +116,8 @@ function draw() {
     drawPaddle();
     drawBall();
     drawBricks();
-    checkBorderCollision();
+    collisionDetectionBrick();
+    collisionDetectionBorder();
     x += dx;
     y += dy;
     //refactor with Math.min and Math.max
