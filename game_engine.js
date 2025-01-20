@@ -30,7 +30,7 @@ let interval = 0;
 let score = 0;
 let lives = 3;
 
-const brickRowCount = 3;
+const brickRowCount = 4;
 const brickColumnCount = 5;
 const brickWidth = 75;
 const brickHeight = 20;
@@ -57,7 +57,7 @@ function collisionDetectionBorder() {
             if (!lives) {
                 alert("GAME OVER!");
                 document.location.reload();
-                clearInterval(interval);
+                //clearInterval(interval);
             } else {
                 x = canvas.width / 2;
                 y = canvas.height - 30;
@@ -85,7 +85,7 @@ function collisionDetectionBrick() {
                     if (score === brickColumnCount * brickRowCount * 100) {
                         alert("YOU WIN!");
                         document.location.reload();
-                        clearInterval(interval);
+                        //clearInterval(interval);
                     }
                 }
             }
@@ -157,6 +157,14 @@ function draw() {
     } else if (isLeftPressed && paddleX > 0) {
         paddleX -= 7;
     }
+
+    requestAnimationFrame(draw);
+    /*
+    The draw() function is now getting executed again and again within a requestAnimationFrame() loop,
+    but instead of the fixed 10 milliseconds frame rate, we are giving control of the frame rate back 
+    to the browser. It will sync the frame rate accordingly and render the shapes only when needed. 
+    This produces a more efficient, smoother animation loop than the older setInterval() method.
+    */
 }
 
 function startGame() {
@@ -186,7 +194,8 @@ function startGame() {
         }
     }
 
-    interval = setInterval(draw, 10); //The draw() function will be executed within setInterval every 10 milliseconds
+    //interval = setInterval(draw, 10); //The draw() function will be executed within setInterval every 10 milliseconds
+    draw();
 
 }
 //add start game button logic
