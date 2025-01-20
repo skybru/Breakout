@@ -16,8 +16,8 @@ ctx.closePath();
 
 let x = canvas.width / 2;
 let y = canvas.height - 30;
-let dx = Math.random() * 2;
-let dy = Math.random() * -2;
+let dx = 2;
+let dy = -2;
 const ballRadius = 10;
 
 const paddleHeight = 10;
@@ -158,6 +158,14 @@ function startGame() {
             isRightPressed = false;
         } else if (e.key === "Left" || e.key === "ArrowLeft") {
             isLeftPressed = false;
+        }
+    }
+
+    document.addEventListener("mousemove", mouseMoveHandler, false);
+    function mouseMoveHandler(e) {
+        const relativeX = e.clientX - canvas.offsetLeft; //e.clientX = horizontal mouse position in the viewport
+        if (relativeX > 0 && relativeX < canvas.width) {
+            paddleX = relativeX - paddleWidth / 2;
         }
     }
 
