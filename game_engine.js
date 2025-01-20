@@ -16,8 +16,8 @@ ctx.closePath();
 
 let x = canvas.width / 2;
 let y = canvas.height - 30;
-let dx = 2;
-let dy = -2;
+let dx = Math.random() * 2;
+let dy = Math.random() * -2;
 const ballRadius = 10;
 
 const paddleHeight = 10;
@@ -27,6 +27,7 @@ let isRightPressed = false;
 let isLeftPressed = false;
 
 let interval = 0;
+let score = 0;
 
 const brickRowCount = 3;
 const brickColumnCount = 5;
@@ -70,6 +71,12 @@ function collisionDetectionBrick() {
                 if (y + dy > b.y && y + dy < b.y + brickHeight && x + dx > b.x && x + dx < b.x + brickWidth) {
                     dy = -dy;
                     b.status = 0;
+                    score += 100;
+                    if (score === brickColumnCount * brickRowCount * 100) {
+                        alert("YOU WIN!");
+                        document.location.reload();
+                        clearInterval(interval);
+                    }
                 }
             }
         }
@@ -111,11 +118,18 @@ function drawBricks() {
     }
 }
 
+function drawScore() {
+    ctx.font = "16px Impact";
+    ctx.fillStyle = "black";
+    ctx.fillText(`Score: ${score}`, 8, 20);
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPaddle();
     drawBall();
     drawBricks();
+    drawScore();
     collisionDetectionBrick();
     collisionDetectionBorder();
     x += dx;
