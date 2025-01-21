@@ -16,13 +16,14 @@ ctx.closePath();
 
 let x = canvas.width / 2;
 let y = canvas.height - 30;
-let dx = 2;
+let dx = 0;
 let dy = -2;
 const ballRadius = 10;
 
 const paddleHeight = 10;
 const paddleWidth = 75;
 let paddleX = (canvas.width - paddleWidth) / 2;
+let paddleAngleOffset = 10;
 let isRightPressed = false;
 let isLeftPressed = false;
 
@@ -35,7 +36,7 @@ const brickColumnCount = 5;
 const brickWidth = 75;
 const brickHeight = 20;
 const brickPadding = 10;
-const brickOffsetTop = 30;
+const brickOffsetTop = 40;
 const brickOffsetLeft = 30;
 const bricks = [];
 for (let c = 0; c < brickColumnCount; c++) {
@@ -46,13 +47,14 @@ for (let c = 0; c < brickColumnCount; c++) {
 }
 
 function collisionDetectionBorder() {
-    if (y + dy < ballRadius) {
+    if (y + dy < brickOffsetTop) {
         dy = -dy;
-    } else if (y + dy > canvas.height - ballRadius) {
+    } else if (y + dy > canvas.height - ballRadius * 1.5) {
         //check whether the center of the ball is between the left and right edges of the paddle
         if (x > paddleX && x < paddleX + paddleWidth) {
             dy = -dy;
-        } else {
+            collisionDetectionPaddleAngle();
+        } else if (y + dy > canvas.height) {
             lives--;
             if (!lives) {
                 alert("GAME OVER!");
@@ -61,7 +63,7 @@ function collisionDetectionBorder() {
             } else {
                 x = canvas.width / 2;
                 y = canvas.height - 30;
-                dx = 2;
+                dx = 0;
                 dy = -2;
                 paddleX = (canvas.width - paddleWidth) / 2;
             }
@@ -70,6 +72,21 @@ function collisionDetectionBorder() {
 
     if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
         dx = -dx;
+    }
+}
+
+function collisionDetectionPaddleAngle() {
+    if (x > paddleX && x < paddleX + paddleAngleOffset) {
+        dx = (dx - Math.random() * 3) * 0.5;
+    }
+    if (x > paddleX && x < paddleX + paddleAngleOffset && isLeftPressed) {
+        dx = dx - Math.random() * 3;
+    }
+    if (x > paddleX + paddleWidth - paddleAngleOffset && x < paddleX + paddleWidth) {
+        dx = (dx + Math.random() * 3) * 0.5;
+    }
+    if (x > paddleX + paddleWidth - paddleAngleOffset && x < paddleX + paddleWidth && isRightPressed) {
+        dx = dx + Math.random() * 3;
     }
 }
 
@@ -97,7 +114,7 @@ function collisionDetectionBrick() {
 function drawBall() {
     ctx.beginPath();
     ctx.arc(x, y, ballRadius, 0, Math.PI * 2, false);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = "#000066";
     ctx.fill();
     ctx.closePath();
 }
@@ -105,8 +122,10 @@ function drawBall() {
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-    ctx.fillStyle = "#0095DD";
+    ctx.fillStyle = "#538cc6";
     ctx.fill();
+    ctx.strokeStyle = "#809fff";
+    ctx.stroke();
     ctx.closePath();
 }
 
@@ -120,8 +139,10 @@ function drawBricks() {
                 bricks[c][r].y = brickY;
                 ctx.beginPath();
                 ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                ctx.fillStyle = "orange";
+                ctx.fillStyle = "#ff8000";
                 ctx.fill();
+                ctx.strokeStyle = "#ffcc66";
+                ctx.stroke();
                 ctx.closePath();
             }
         }
@@ -129,6 +150,13 @@ function drawBricks() {
 }
 
 function drawScore() {
+    ctx.beginPath();
+    ctx.rect(0, 0, canvas.width, brickOffsetTop - ballRadius);
+    ctx.fillStyle = "#d9ffb3";
+    ctx.fill();
+    ctx.strokeStyle = "rgb(89 179 0 / 90%)";
+    ctx.stroke();
+    ctx.closePath();
     ctx.font = "16px Impact";
     ctx.fillStyle = "black";
     ctx.fillText(`Score: ${score}`, 8, 20);
@@ -143,7 +171,7 @@ function drawLives() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPaddle();
-    drawBall();
+    drawBall();    
     drawBricks();
     drawScore();
     drawLives();
@@ -153,9 +181,9 @@ function draw() {
     y += dy;
     //refactor with Math.min and Math.max
     if (isRightPressed && paddleX + paddleWidth < canvas.width) {
-        paddleX += 7;
+        paddleX += 5;
     } else if (isLeftPressed && paddleX > 0) {
-        paddleX -= 7;
+        paddleX -= 5;
     }
 
     requestAnimationFrame(draw);
