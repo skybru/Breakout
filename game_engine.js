@@ -77,13 +77,13 @@ function collisionDetectionBorder() {
 
 function collisionDetectionPaddleAngle() {
     if (x > paddleX && x < paddleX + paddleAngleOffset) {
-        dx = (dx - Math.random() * 3) * 0.5;
+        dx = (dx - Math.random() * 3) * 0.9;
     }
     if (x > paddleX && x < paddleX + paddleAngleOffset && isLeftPressed) {
         dx = dx - Math.random() * 3;
     }
     if (x > paddleX + paddleWidth - paddleAngleOffset && x < paddleX + paddleWidth) {
-        dx = (dx + Math.random() * 3) * 0.5;
+        dx = (dx + Math.random() * 3) * 0.9;
     }
     if (x > paddleX + paddleWidth - paddleAngleOffset && x < paddleX + paddleWidth && isRightPressed) {
         dx = dx + Math.random() * 3;
@@ -116,6 +116,8 @@ function drawBall() {
     ctx.arc(x, y, ballRadius, 0, Math.PI * 2, false);
     ctx.fillStyle = "#000066";
     ctx.fill();
+    ctx.strokeStyle = "#f9b3ff";
+    ctx.stroke();
     ctx.closePath();
 }
 
@@ -124,7 +126,7 @@ function drawPaddle() {
     ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
     ctx.fillStyle = "#538cc6";
     ctx.fill();
-    ctx.strokeStyle = "#809fff";
+    ctx.strokeStyle = "#8debf2";
     ctx.stroke();
     ctx.closePath();
 }
@@ -152,20 +154,24 @@ function drawBricks() {
 function drawScore() {
     ctx.beginPath();
     ctx.rect(0, 0, canvas.width, brickOffsetTop - ballRadius);
-    ctx.fillStyle = "#d9ffb3";
+    ctx.fillStyle = "#b3daff";
     ctx.fill();
-    ctx.strokeStyle = "rgb(89 179 0 / 90%)";
+    ctx.strokeStyle = "#9dbedd";
     ctx.stroke();
     ctx.closePath();
     ctx.font = "16px Impact";
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#fff";
     ctx.fillText(`Score: ${score}`, 8, 20);
+    ctx.strokeStyle = "#5e95ed";
+    ctx.strokeText(`Score: ${score}`, 8, 20);
 }
 
 function drawLives() {
     ctx.font = "16px Impact";
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#fff";
     ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
+    ctx.strokeStyle = "#5e95ed";
+    ctx.strokeText(`Lives: ${lives}`, canvas.width - 65, 20);
 }
 
 function draw() {
